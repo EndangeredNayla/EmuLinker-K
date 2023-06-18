@@ -49,7 +49,7 @@ class KailleraGameImpl(
   override var maxPing = 1000
   override var startN = -1
   override var ignoringUnnecessaryServerActivity = false
-  override var sameDelay = false
+  override var sameDelay = true
   override var startTimeout = false
   override var maxUsers = 8
     set(maxUsers) {
@@ -61,7 +61,7 @@ class KailleraGameImpl(
   override val players: MutableList<KailleraUser> = CopyOnWriteArrayList()
 
   val mutedUsers: MutableList<String> = mutableListOf()
-  var aEmulator = "any"
+  var aEmulator = "MPN64"
   var aConnection = "any"
   val startDate: Date = Date()
   @JvmField var swap = false
