@@ -428,8 +428,8 @@ class AccessManager2 @Inject internal constructor(private val flags: RuntimeFlag
   }
 
   init {
-    val url = AccessManager2::class.java.getResource("/access.cfg")
-    requireNotNull(url) { "Resource not found: /access.conf" }
+    val url = AccessManager2::class.java.getResource("access.cfg")
+    requireNotNull(url) { "Resource not found: access.conf" }
     val af =
       try {
         File(url.toURI())
