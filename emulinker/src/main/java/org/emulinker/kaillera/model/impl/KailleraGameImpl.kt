@@ -51,7 +51,7 @@ class KailleraGameImpl(
   override var ignoringUnnecessaryServerActivity = false
   override var sameDelay = true
   override var startTimeout = false
-  override var maxUsers = 8
+  override var maxUsers = 4
     set(maxUsers) {
       field = maxUsers
       server.addEvent(GameStatusChangedEvent(server, this))

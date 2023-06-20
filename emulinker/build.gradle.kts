@@ -120,20 +120,6 @@ tasks.withType<Test> {
   useJUnit()
 }
 
-// Formatting/linting.
-spotless {
-  kotlin {
-    target("**/*.kt", "**/*.kts")
-    targetExclude("build/", ".git/", ".idea/", ".mvn", "src/main/java-templates/")
-    ktfmt().googleStyle()
-  }
-
-  yaml {
-    target("**/*.yml", "**/*.yaml")
-    targetExclude("build/", ".git/", ".idea/", ".mvn")
-    jackson()
-  }
-}
 
 application { mainClass.set("org.emulinker.kaillera.pico.ServerMainKt") }
 
