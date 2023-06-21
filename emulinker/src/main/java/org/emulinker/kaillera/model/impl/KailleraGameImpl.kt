@@ -468,7 +468,7 @@ class KailleraGameImpl(
       isSynched = true
       startTimeoutTime = System.currentTimeMillis()
       addEvent(AllReadyEvent(this))
-      var frameDelay = (highestUserFrameDelay + 1) * owner.connectionType.byteValue - 1
+      var frameDelay = (highestUserFrameDelay + 1) * 3
       if (sameDelay) {
         announce("This game's delay is: $highestUserFrameDelay ($frameDelay frame delay)")
       } else {
