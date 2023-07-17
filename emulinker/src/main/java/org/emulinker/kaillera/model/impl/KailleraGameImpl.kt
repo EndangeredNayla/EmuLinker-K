@@ -468,7 +468,7 @@ class KailleraGameImpl(
       isSynched = true
       startTimeoutTime = System.currentTimeMillis()
       addEvent(AllReadyEvent(this))
-      var frameDelay = (highestUserFrameDelay + 1) * 3
+      var frameDelay = (highestUserFrameDelay + 1) * 6
       if (sameDelay) {
         announce("This game's delay is: $highestUserFrameDelay ($frameDelay frame delay)")
       } else {
@@ -477,7 +477,7 @@ class KailleraGameImpl(
           val player = players[i]
           // do not show delay if stealth mode
           if (player != null && !player.inStealthMode) {
-            frameDelay = (player.frameDelay + 1) * player.connectionType.byteValue - 1
+            frameDelay = (player.frameDelay + 1) * 6
             announce("P${i + 1} Delay = ${player.frameDelay} ($frameDelay frame delay)")
           }
           i++
