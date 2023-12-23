@@ -13,6 +13,7 @@ import org.emulinker.kaillera.lookingforgame.TwitterBroadcaster
 import org.emulinker.kaillera.model.event.GameChatEvent
 import org.emulinker.kaillera.model.exception.ActionException
 import org.emulinker.kaillera.model.exception.GameChatException
+import org.emulinker.util.EmuLang
 import org.emulinker.util.EmuUtil.threadSleep
 
 @Singleton
@@ -21,7 +22,7 @@ class GameChatAction
 internal constructor(
   private val gameOwnerCommandAction: GameOwnerCommandAction,
   private val lookingForGameReporter: TwitterBroadcaster
-) : V086Action<GameChat.GameChatRequest>, V086GameEventHandler<GameChatEvent> {
+) : V086Action<GameChatRequest>, V086GameEventHandler<GameChatEvent> {
   override var actionPerformedCount = 0
     private set
   override var handledEventCount = 0
@@ -30,7 +31,7 @@ internal constructor(
   override fun toString() = "GameChatAction"
 
   @Throws(FatalActionException::class)
-  override fun performAction(message: GameChat.GameChatRequest, clientHandler: V086ClientHandler) {
+  override fun performAction(message: GameChatRequest, clientHandler: V086ClientHandler) {
     if (clientHandler.user.game == null) return
     if (message.message.startsWith(ADMIN_COMMAND_ESCAPE_STRING)) {
       // if(clientHandler.getUser().getAccess() >= AccessManager.ACCESS_ADMIN ||
@@ -473,7 +474,13 @@ internal constructor(
         threadSleep(20.milliseconds)
       } else if (message.message == "/stop") {
         if (lookingForGameReporter.cancelActionsForUser(clientHandler.user.id)) {
-          clientHandler.user.game!!.announce("Canceled pending tweet.", clientHandler.user)
+          clientHandler.user.game!!.announce(
+            EmuLang.getStringOrDefault(
+              "KailleraServerImpl.CanceledPendingTweet",
+              default = "Canceled pending tweet."
+            ),
+            clientHandler.user
+          )
         } else {
           clientHandler.user.game!!.announce("No pending tweets.", clientHandler.user)
         }
@@ -505,7 +512,7 @@ internal constructor(
       }
       val m = gameChatEvent.message
       clientHandler.send(
-        GameChat.GameChatNotification(clientHandler.nextMessageNumber, gameChatEvent.user.name!!, m)
+        GameChatNotification(clientHandler.nextMessageNumber, gameChatEvent.user.name!!, m)
       )
     } catch (e: MessageFormatException) {
       logger.atSevere().withCause(e).log("Failed to construct GameChat.Notification message")

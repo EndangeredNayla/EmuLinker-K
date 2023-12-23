@@ -12,10 +12,14 @@ import kotlin.concurrent.schedule
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.minutes
 import org.emulinker.config.RuntimeFlags
+import org.emulinker.util.TaskScheduler
 import org.emulinker.util.WildcardStringPattern
 
 @Singleton
-class AccessManager2 @Inject internal constructor(private val flags: RuntimeFlags) : AccessManager {
+class AccessManager2
+@Inject
+internal constructor(private val flags: RuntimeFlags, private val taskScheduler: TaskScheduler) :
+  AccessManager {
   companion object {
     init {
       Security.setProperty("networkaddress.cache.ttl", "60")
@@ -35,7 +39,8 @@ class AccessManager2 @Inject internal constructor(private val flags: RuntimeFlag
   private val tempModeratorList: MutableList<TempModerator> = CopyOnWriteArrayList()
   private val tempElevatedList: MutableList<TempElevated> = CopyOnWriteArrayList()
   private val silenceList: MutableList<Silence> = CopyOnWriteArrayList()
-  private val timer = Timer()
+
+  private val timerTasks = mutableSetOf<TimerTask>()
 
   @Synchronized
   private fun checkReload() {
@@ -105,7 +110,7 @@ class AccessManager2 @Inject internal constructor(private val flags: RuntimeFlag
     logger.atInfo().log("Adding temporary attribute: %s", attribute)
     list.add(attribute)
 
-    timer.schedule(delay = attribute.duration.inWholeMilliseconds) {
+    taskScheduler.schedule(delay = attribute.duration) {
       list.remove(attribute)
       logger.atInfo().log("Removing temporary attribute: %s", attribute)
     }
@@ -422,14 +427,16 @@ class AccessManager2 @Inject internal constructor(private val flags: RuntimeFlag
   init {
     loadAccess()
 
-    timer.schedule(delay = 1.minutes.inWholeMilliseconds, period = 1.minutes.inWholeMilliseconds) {
-      logger.atFine().log("Refreshing DNS for all users and addresses")
-      userList.forEach { it.refreshDNS() }
-      addressList.forEach { it.refreshDNS() }
-    }
+    timerTasks.add(
+      taskScheduler.scheduleRepeating(initialDelay = 1.minutes, period = 1.minutes) {
+        logger.atFine().log("Refreshing DNS for all users and addresses")
+        userList.forEach { it.refreshDNS() }
+        addressList.forEach { it.refreshDNS() }
+      }
+    )
   }
 
   override fun close() {
-    timer.cancel()
+    timerTasks.forEach { it.cancel() }
   }
 }

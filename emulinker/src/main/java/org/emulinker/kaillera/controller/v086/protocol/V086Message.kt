@@ -146,3 +146,9 @@ abstract class V086Message : ByteBufferMessage() {
     private val logger = FluentLogger.forEnclosingClass()
   }
 }
+
+/** [V086Message] that is sent from the server to clients. */
+sealed interface ServerMessage
+
+/** [V086Message] that is sent from clients to the server. */
+sealed interface ClientMessage
